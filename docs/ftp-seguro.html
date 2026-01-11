@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 2026-01-07 mié 17:15 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FTP seguro</title>
+<meta name="author" content="Fernando Raya Díaz" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">FTP seguro</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org90ec2a5">1. Configuración de partida</a></li>
+<li><a href="#orgddfced0">2. Uso del cliente FTP en línea de comandos</a></li>
+<li><a href="#org73594ae">3. Uso de un cliente gráfico de FTP</a></li>
+<li><a href="#orgd9d60a6">4. Instalación y configuración del servidor vsftpd sobre Linux</a></li>
+<li><a href="#org43acd92">5. Configuración FTP</a></li>
+<li><a href="#org2397bd0">6. Configuración del servidor vsftpd seguro Linux</a></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org90ec2a5" class="outline-2">
+<h2 id="org90ec2a5"><span class="section-number-2">1.</span> Configuración de partida</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Utilizaremos los mismos nombres de equipos y direcciones IPs de las
+prácticas anteriores.
+</p>
+</div>
+</div>
+<div id="outline-container-orgddfced0" class="outline-2">
+<h2 id="orgddfced0"><span class="section-number-2">2.</span> Uso del cliente FTP en línea de comandos</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Crearemos una máquina virtual Linux que tenga instalado el cliente de
+línea de comandos <code>ftp</code>. Llamaremos <code>cliente</code> a esta MV.
+</p>
+
+<ul class="org-ul">
+<li>Inicia sesión con la cuenta <code>pepe</code> (si no existe, se crea)</li>
+
+<li>Crea el directorio <code>/home/pepe/pruebasFTP</code> y cámbiate a dicho
+directorio.</li>
+
+<li>Crea en el directorio <code>pruebasFTP</code> el archivo <code>datos1.txt</code> con el
+contenido que quieras.</li>
+
+<li>Conéctate con el cliente <code>pftp</code> en línea de comandos, establece una
+conexión anónima al servidor <code>ftp.cica.es</code>.</li>
+
+<li>Desde el cliente <code>pftp</code> examina la ruta o directorio activo en la que
+te encuentras en el servidor.</li>
+
+<li>Desde el cliente <code>pftp</code> examina la ruta o directorio activo en la
+que te encuentras en el cliente.</li>
+
+<li>Desde el cliente <code>pftp</code> haz un listado de los archivos del servidor.</li>
+
+<li>Desde el cliente <code>pftp</code> haz un listado de los archivos de la carpeta
+del cliente.</li>
+
+<li>Desde el cliente <code>pftp</code> descarga el archivo <code>/pub/check</code>.</li>
+
+<li>Desde el cliente <code>pftp</code> haz un listado de los archivos de la carpeta
+del cliente para comprobar que se ha descargado el archivo.</li>
+
+<li>Desde el cliente <code>pftp</code> crea el directorio <code>img</code> dentro de
+<code>pruebasFTP</code> y comprueba que se ha creado correctamente.</li>
+
+<li>Desde el cliente <code>pftp</code> intenta subir al servidor el archivo
+<code>datos1.txt</code>.</li>
+
+<li>Cierra la conexión con el servidor.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org73594ae" class="outline-2">
+<h2 id="org73594ae"><span class="section-number-2">3.</span> Uso de un cliente gráfico de FTP</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li>En una máquina cualquiera con modo gráfico instala un cliente de
+FTP, por ejemplo Filezilla, gFTP, WinSCPi, FTP Voyager o Cross FTP.</li>
+
+<li>Inicia la aplicación y crea una conexión anónima al sitio
+<code>ftp.rediris.es</code>.</li>
+
+<li>Examina la ventana de los mensajes intercambiados y contesta:
+
+<ul class="org-ul">
+<li>¿Qué modo ha usado el cliente (activo o pasivo) al descargar el
+listado de archivos del servidor?</li>
+
+<li>¿Cuál es la IP del servidor de <code>ftp.rediris.es</code>?</li>
+
+<li>¿De los 6 dígitos que aparecen en el mensaje <code>227 Entering Passive
+    Mode</code> (…) qué significan los 2 últimos números?</li>
+</ul></li>
+
+<li>Descarga el archivo <code>welcome.msg</code> sobre la carpeta de documentos del
+usuario.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd9d60a6" class="outline-2">
+<h2 id="orgd9d60a6"><span class="section-number-2">4.</span> Instalación y configuración del servidor vsftpd sobre Linux</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Instala el servidor <code>vsfptd</code> sobre alguna de las MVs con Linux que
+tienes y añade un registro CNAME en la zona DNS que apunte de
+<code>ftp.example.test</code> al servidor donde se alojará o puedes crear otra
+nueva máquina virtual para alojar el servicio, con lo que tendrías que
+añadir un registro de tipo <code>A</code> desde <code>ftp.example.test</code> a su dirección
+IP. Tú decides.
+</p>
+
+<p>
+Pasos a seguir:
+</p>
+
+<ul class="org-ul">
+<li>Instala el paquete <code>vsftpd</code></li>
+
+<li>Comprueba que se ha creado el usuario <code>ftp</code> y que su directorio
+<code>home</code> es <code>/srv/ftp</code>. Busca estos datos en los archivos del sistema
+donde se guardan los usuarios, y donde se guardan los grupos de
+usuarios.</li>
+
+<li>Comprueba que se ha creado el directorio <code>/srv/ftp</code> y que su
+propietario es el usuario <code>root</code>, y que su grupo es <code>ftp</code>.</li>
+
+<li>Lista los usuarios del sistema que no podrán acceder al servicio FTP.</li>
+
+<li>Comprueba que el servidor está iniciado y en ejecución.</li>
+
+<li>Comprueba que el servidor está escuchando por el puerto <code>21</code>.</li>
+
+<li>Realiza una copia de seguridad del archivo de configuración
+<code>/etc/vsftpd.conf</code>.</li>
+
+<li>Crea los usuarios locales <code>luis</code>, <code>maria</code> y <code>miguel~</code>.</li>
+
+<li>Inicia sesión como usuario <code>luis</code> y crea en su directorio <code>home</code> dos
+archivos de texto de nombres <code>luis1.txt</code> y <code>luis2.txt</code></li>
+
+<li>Inicia sesión como usuario <code>maria</code> y crea en su directorio <code>home</code>
+dos archivos de texto de nombres <code>maria1.txt</code> y <code>maria2.txt</code></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org43acd92" class="outline-2">
+<h2 id="org43acd92"><span class="section-number-2">5.</span> Configuración FTP</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+Modifica el archivo de configuración del servicio FTP tal como se
+propone en los pasos siguientes, de forma que todos los comentarios
+originales que trae por defecto el archivo de configuración se borren.
+</p>
+
+<p>
+Se aconseja que precediendo a las directivas que se vayan a usar, se
+escriban vuestros comentarios que expliquen el significado de dichas
+directivas. Por ejemplo:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-nil" id="org0b1b632">#
+# 1. El servidor se inicia en modo standalone
+&lt; Aquí se escribiría la directiva correspondiente para el modo standalone&gt;
+
+# 2. Mensaje de bienvenida que presentará el servidor al conectarse los clientes
+&lt;Aquí se escribiría directiva correspondiente para dar el mensaje de bienvenida&gt;
+</pre>
+</div>
+
+<p>
+La configuración del servicio FTP tendrá que cumplir los siguientes
+requisitos:
+</p>
+
+<ul class="org-ul">
+<li>El servidor se iniciará en modo <code>standalone</code> (independiente) usando
+IPv4.</li>
+
+<li>El mensaje de bienvenida del servidor ftp será:</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-nil">--- Welcome to the FTP server of 'sistema.sol'---
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Además, cuando los usuarios anónimos accedan se les mostrará el
+mensaje:</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-nil">---You have accessed the public directory server of 'sistema.sol'---
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Se habilitará el puerto 20 para la conexión de datos.</li>
+
+<li>Se cerrarán las conexiones que estén inactivas más de 720 segundos.</li>
+
+<li>Se permitirán un máximo de 15 conexiones simultáneas al servidor.</li>
+
+<li>Los usuarios con cuenta podrán usar hasta 5 MB/s de ancho de banda.</li>
+
+<li>Los usuarios anónimos solo podrán usar hasta 2 MB/s de ancho de
+banda.</li>
+
+<li>Se permitirá acceso a usuarios anónimos de forma que puedan
+descargar archivos y no puedan subir archivos.</li>
+
+<li>Se permitirá acceso a usuarios locales de forma que puedan descargar
+y subir archivos.</li>
+
+<li>Sólo el usuario maria no estará enjaulado en su directorio <code>home</code>,
+el resto de usuarios si estarán enjaulados en su directorio <code>home</code>.</li>
+
+<li>Al reiniciar el servicio asegúrate de su estado y que el servidor
+está a la escucha por el puerto <code>21/TCP</code>.</li>
+
+<li>Desde algún equipo, realiza una conexión anónima mediante el cliente
+de consola de comandos y comprueba la secuencia de conexión.</li>
+
+<li>También realiza una conexión autentificada con el usuario <code>maria</code> y
+comprueba que <b>NO</b> está enjaulado en su <code>home</code>.</li>
+
+<li>Además realiza una conexión autentificada con el usuario <code>luis</code> y
+comprueba que <b>SI</b> está enjaulado en su <code>home</code>.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org2397bd0" class="outline-2">
+<h2 id="org2397bd0"><span class="section-number-2">6.</span> Configuración del servidor vsftpd seguro Linux</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+Modifica la configuración del servidor FTP anterior para convertirlo
+en un servidor seguro. Para ello:
+</p>
+
+<ul class="org-ul">
+<li>Necesitarás usar un certificado de servidor que se deberá ubicar en
+un directorio con privilegios de administrador (por ejemplo en
+<code>/etc/ssl/certs/</code>). Lo nombraras como <code>/etc/ssl/certs/example.test.pem</code></li>
+
+<li>Configura el servidor FTP con las directivas necesarias para forzar
+que tanto las operaciones de comunicación como las de <i>login</i> para
+los usuarios con cuenta se realicen cifradas usando exclusivamente
+SSLv3 y TLS. Los usuarios anónimos podrán usar o no conexiones
+cifradas.</li>
+</ul>
+
+<div class="warning" id="orgb2b6d13">
+<p>
+Algunos clientes FTPS, no todos, necesitan en el servidor la directiva
+<code>require_ssl_reuse=NO</code> para poder conectarse mediante FTPS.
+</p>
+
+</div>
+
+<ul class="org-ul">
+<li>Al reiniciar el servicio asegúrate del estado y que el servidor está
+a la escucha por el puerto <code>21/TCP</code>.</li>
+
+<li>Para probar la conexión segura, usa un cliente gráfico.  Crea una
+sesión segura autentificada con el usuario <code>luis</code>.</li>
+
+<li>Realiza la conexión y acepta el certificado del servidor. Una vez
+realizada la conexión, prueba a descargarte del servidor algún
+archivo. Asegúrate que la conexión es segura observando el candado
+cerrado que aparece en la parte inferior de la ventana de conexión.</li>
+
+<li>Realiza ahora una conexión segura anónima.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Autor: Fernando Raya Díaz</p>
+<p class="date">Created: 2026-01-07 mié 17:15</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

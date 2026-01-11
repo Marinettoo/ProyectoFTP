@@ -1,0 +1,810 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 2026-01-06 mar 20:33 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Configuración de un Servidor FTP con Vagrant y Ansible</title>
+<meta name="author" content="Fernando Raya" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Configuración de un Servidor FTP con Vagrant y Ansible</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org1bbe4ce">1. Objetivo</a></li>
+<li><a href="#orga0c094f">2. Descripción de la tarea</a></li>
+<li><a href="#orge174e27">3. Creación del Repositorio en GitHub</a>
+<ul>
+<li><a href="#org6768edd">3.1. Incluir una licencia adecuada para el proyecto.</a></li>
+</ul>
+</li>
+<li><a href="#orgaffc580">4. Configurar las herramientas de gestión de proyectos de GitHub</a></li>
+<li><a href="#orgf912c42">5. Creación de la Infraestructura con Vagrant</a></li>
+<li><a href="#orgd50d856">6. Creación de la Infraestructura de Ansible</a></li>
+<li><a href="#org1bb4ff4">7. Pruebas</a>
+<ul>
+<li><a href="#org161ebfc">7.1. <i>ansible-lint</i></a></li>
+<li><a href="#org3658a28">7.2. Realizar pruebas funcionales del servidor FTP</a></li>
+</ul>
+</li>
+<li><a href="#org33e9814">8. Documentación</a></li>
+<li><a href="#org3a57d7e">9. Herramientas Requeridas</a></li>
+<li><a href="#org215d740">10. Criterios de Evaluación</a></li>
+<li><a href="#org11bc2d3">11. Plazo de Entrega</a></li>
+<li><a href="#orgcd0eab5">12. Rúbrica de Evaluación</a>
+<ul>
+<li><a href="#org6e1e852">12.1. Funcionamiento del Servidor FTP</a></li>
+<li><a href="#org7d12ead">12.2. Calidad del Código</a></li>
+<li><a href="#orgeda4872">12.3. Gestión del Proyecto</a></li>
+<li><a href="#org2b83022">12.4. Pruebas</a></li>
+<li><a href="#org98a8dac">12.5. Documentación</a></li>
+<li><a href="#org6127461">12.6. Trabajo en Equipo</a></li>
+</ul>
+</li>
+<li><a href="#org284d04a">13. Plazo de Entrega</a></li>
+<li><a href="#org5a99560">14. Ejemplo de Organización del Tablero de GitHub Projects</a>
+<ul>
+<li><a href="#org1d354b7">14.1. Estructura del Tablero de Proyectos</a></li>
+</ul>
+</li>
+<li><a href="#org2f16f42">15. Plantillas para las Tareas</a>
+<ul>
+<li><a href="#orgb55dd6d">15.1. Plantilla para Crear una Tarea</a></li>
+</ul>
+</li>
+<li><a href="#org4dd72f3">16. Tarea Adicional: Configuración del Servidor DNS</a>
+<ul>
+<li><a href="#org1384b63">16.1. Configuración del DNS con Ansible</a></li>
+<li><a href="#org4b53b62">16.2. Integración del DNS en el Proyecto</a></li>
+</ul>
+</li>
+<li><a href="#orgda7fafe">17. Evaluación</a></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1bbe4ce" class="outline-2">
+<h2 id="org1bbe4ce"><span class="section-number-2">1.</span> Objetivo</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+El objetivo de este proyecto es que los estudiantes trabajen en equipo
+para configurar un servidor FTP utilizando herramientas de
+virtualización y automatización como Vagrant y Ansible. El trabajo
+será gestionado mediante un repositorio en GitHub, donde cada
+integrante del equipo asumirá responsabilidades específicas y
+contribuirá al éxito del proyecto.
+</p>
+</div>
+</div>
+<div id="outline-container-orga0c094f" class="outline-2">
+<h2 id="orga0c094f"><span class="section-number-2">2.</span> Descripción de la tarea</h2>
+<div class="outline-text-2" id="text-2">
+<ul class="org-ul">
+<li>Creación del repositorio en Github</li>
+
+<li>Configuración del proyecto en Github</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orge174e27" class="outline-2">
+<h2 id="orge174e27"><span class="section-number-2">3.</span> Creación del Repositorio en GitHub</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Configurar un repositorio en GitHub para centralizar el trabajo del
+equipo.
+</p>
+</div>
+<div id="outline-container-org6768edd" class="outline-3">
+<h3 id="org6768edd"><span class="section-number-3">3.1.</span> Incluir una licencia adecuada para el proyecto.</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Un archivo <i>README.md</i> con información básica del proyecto:
+</p>
+
+<ul class="org-ul">
+<li>Descripción del objetivo.</li>
+
+<li>Herramientas utilizadas.</li>
+
+<li>Instrucciones iniciales de uso.</li>
+
+<li>Roles de los integrantes del equipo.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgaffc580" class="outline-2">
+<h2 id="orgaffc580"><span class="section-number-2">4.</span> Configurar las herramientas de gestión de proyectos de GitHub</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Crear un tablero de proyectos (<i>GitHub Projects</i>) para planificar y
+hacer seguimiento de las tareas.
+</p>
+
+<ul class="org-ul">
+<li>Definir columnas como <i>Por hacer</i>, <i>En progreso</i> y <i>Hecho</i>.</li>
+
+<li>Asignar las tareas de manera equitativa entre los integrantes y usar
+etiquetas para organizar el trabajo.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgf912c42" class="outline-2">
+<h2 id="orgf912c42"><span class="section-number-2">5.</span> Creación de la Infraestructura con Vagrant</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+Configurar un entorno virtualizado mediante Vagrant que incluya:
+</p>
+
+<ul class="org-ul">
+<li>Un archivo <i>Vagrantfile</i> para definir la máquina virtual.</li>
+
+<li>Configuración de red y recursos de la máquina virtual según las
+necesidades del servidor FTP.</li>
+
+<li>Documentar el proceso en el repositorio.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd50d856" class="outline-2">
+<h2 id="orgd50d856"><span class="section-number-2">6.</span> Creación de la Infraestructura de Ansible</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+Desarrollar los playbooks y roles de Ansible necesarios para
+configurar automáticamente el servidor FTP.
+</p>
+
+<p>
+Configurar:
+</p>
+
+<ul class="org-ul">
+<li>Instalación del software del servidor FTP.</li>
+
+<li>Configuración de usuarios y permisos.</li>
+
+<li>Políticas de seguridad y opciones avanzadas.</li>
+
+<li>Asegurar que los playbooks sean reutilizables y bien documentados.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1bb4ff4" class="outline-2">
+<h2 id="org1bb4ff4"><span class="section-number-2">7.</span> Pruebas</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-org161ebfc" class="outline-3">
+<h3 id="org161ebfc"><span class="section-number-3">7.1.</span> <i>ansible-lint</i></h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+Verificar la calidad y estilo de los playbooks.
+</p>
+</div>
+</div>
+<div id="outline-container-org3658a28" class="outline-3">
+<h3 id="org3658a28"><span class="section-number-3">7.2.</span> Realizar pruebas funcionales del servidor FTP</h3>
+<div class="outline-text-3" id="text-7-2">
+<ul class="org-ul">
+<li>Conexión al servidor desde un cliente FTP.</li>
+
+<li>Transferencia de archivos.</li>
+
+<li>Validación de usuarios y permisos configurados.</li>
+
+<li>Documentar los resultados de las pruebas en el repositorio.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org33e9814" class="outline-2">
+<h2 id="org33e9814"><span class="section-number-2">8.</span> Documentación</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+Redactar una guía detallada que incluya:
+</p>
+
+<ul class="org-ul">
+<li>Pasos para desplegar el servidor desde el repositorio.</li>
+
+<li>Ejemplos de uso del servidor FTP.</li>
+
+<li>Resolución de problemas comunes.</li>
+
+<li>Consideraciones de diseño y justificación técnica.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org3a57d7e" class="outline-2">
+<h2 id="org3a57d7e"><span class="section-number-2">9.</span> Herramientas Requeridas</h2>
+<div class="outline-text-2" id="text-9">
+<dl class="org-dl">
+<dt>Git/GitHub</dt><dd>para la gestión del código y colaboración en equipo.</dd>
+
+<dt>GitHub Projects</dt><dd>para la gestión del proyecto y asignación de tareas.</dd>
+
+<dt>Vagrant</dt><dd>para la creación y configuración de máquinas virtuales.</dd>
+
+<dt>Ansible</dt><dd>para la automatización de la configuración del servidor FTP.</dd>
+
+<dt>Cliente FTP</dt><dd>para realizar pruebas funcionales.</dd>
+
+<dt>ansible-lint</dt><dd>para verificar la calidad del código Ansible.</dd>
+</dl>
+</div>
+</div>
+<div id="outline-container-org215d740" class="outline-2">
+<h2 id="org215d740"><span class="section-number-2">10.</span> Criterios de Evaluación</h2>
+<div class="outline-text-2" id="text-10">
+<dl class="org-dl">
+<dt>Funcionamiento del Servidor FTP</dt><dd>El servidor debe estar
+correctamente configurado y cumplir con los requisitos funcionales.</dd>
+
+<dt>Calidad del Código</dt><dd>Uso adecuado de Vagrant, Ansible y Git, además
+de la correcta implementación de buenas prácticas.</dd>
+
+<dt>Gestión del Proyecto</dt><dd>Uso eficiente de las herramientas de GitHub
+para planificar, organizar y documentar el progreso del equipo.</dd>
+
+<dt>Organización y Colaboración</dt><dd>Uso eficiente del tablero de GitHub
+Projects, con tareas bien definidas y actualizadas regularmente.</dd>
+
+<dt>Documentación</dt><dd>La guía debe ser clara, completa y profesional.</dd>
+
+<dt>Pruebas</dt><dd>Resultados de las pruebas funcionales y de estilo.</dd>
+</dl>
+</div>
+</div>
+<div id="outline-container-org11bc2d3" class="outline-2">
+<h2 id="org11bc2d3"><span class="section-number-2">11.</span> Plazo de Entrega</h2>
+<div class="outline-text-2" id="text-11">
+<ul class="org-ul">
+<li>El proyecto deberá entregarse antes de la fecha que aparece en la
+tarea de Moodle, incluyendo el repositorio final en GitHub y un
+informe/documentación en formato PDF.</li>
+
+<li>Después de esta fecha se podrá seguir entregando durante una semana
+aunque reduciendo la nota.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgcd0eab5" class="outline-2">
+<h2 id="orgcd0eab5"><span class="section-number-2">12.</span> Rúbrica de Evaluación</h2>
+<div class="outline-text-2" id="text-12">
+</div>
+<div id="outline-container-org6e1e852" class="outline-3">
+<h3 id="org6e1e852"><span class="section-number-3">12.1.</span> Funcionamiento del Servidor FTP</h3>
+<div class="outline-text-3" id="text-12-1">
+<ul class="org-ul">
+<li>El servidor FTP funciona correctamente y permite conexiones
+externas. 2 puntos.</li>
+
+<li>Se ha configurado correctamente el acceso, usuarios, y permisos
+según lo especificado. 2 puntos.</li>
+
+<li>El servidor permite la transferencia de archivos y cumple los
+requisitos funcionales mínimos. 1 punto.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7d12ead" class="outline-3">
+<h3 id="org7d12ead"><span class="section-number-3">12.2.</span> Calidad del Código</h3>
+<div class="outline-text-3" id="text-12-2">
+<ul class="org-ul">
+<li>Los archivos de configuración (<i>Vagrantfile</i>, playbooks de Ansible)
+están correctamente estructurados y sin errores sintácticos. 2
+puntos.</li>
+
+<li>Los playbooks y roles de Ansible siguen buenas prácticas, verificado
+con <i>ansible-lint</i>. 1 punto.</li>
+
+<li>El código es modular, reutilizable y bien comentado. 1 punto.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgeda4872" class="outline-3">
+<h3 id="orgeda4872"><span class="section-number-3">12.3.</span> Gestión del Proyecto</h3>
+<div class="outline-text-3" id="text-12-3">
+<ul class="org-ul">
+<li>El repositorio incluye una estructura clara con un README.md bien
+elaborado (objetivos, instrucciones, roles del equipo, etc.). 2
+puntos.</li>
+
+<li>Uso de GitHub Projects: tablero con tareas definidas y actualizadas
+periódicamente (estado: Por hacer, En progreso, Hecho). 2 puntos.</li>
+
+<li>Buen uso del control de versiones (commits frecuentes, mensajes
+descriptivos, ramas, pull requests bien gestionados). 2 puntos.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org2b83022" class="outline-3">
+<h3 id="org2b83022"><span class="section-number-3">12.4.</span> Pruebas</h3>
+<div class="outline-text-3" id="text-12-4">
+<ul class="org-ul">
+<li>Pruebas funcionales realizadas (verificación de conexión,
+transferencia de archivos, usuarios y permisos) y documentadas. 2
+puntos.</li>
+
+<li>Ejecución de `ansible-lint` sin errores graves y evidencia en el
+repositorio. 1 punto.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org98a8dac" class="outline-3">
+<h3 id="org98a8dac"><span class="section-number-3">12.5.</span> Documentación</h3>
+<div class="outline-text-3" id="text-12-5">
+<ul class="org-ul">
+<li>Guía clara y completa para desplegar el servidor FTP y utilizarlo. 2
+puntos.</li>
+
+<li>Ejemplos prácticos incluidos en la documentación (por ejemplo,
+conexión al servidor, comandos FTP). 1 punto.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org6127461" class="outline-3">
+<h3 id="org6127461"><span class="section-number-3">12.6.</span> Trabajo en Equipo</h3>
+<div class="outline-text-3" id="text-12-6">
+<ul class="org-ul">
+<li>Evidencia de colaboración equitativa entre los miembros del equipo
+(reparto de tareas reflejado en el tablero de GitHub Projects y el
+historial de commits). 2 puntos.</li>
+
+<li>Comunicación efectiva y resolución conjunta de problemas. 1 punto.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org284d04a" class="outline-2">
+<h2 id="org284d04a"><span class="section-number-2">13.</span> Plazo de Entrega</h2>
+<div class="outline-text-2" id="text-13">
+<p>
+El proyecto deberá entregarse antes de la fecha de entrega que aparece
+en la tarea de Moodle, incluyendo el repositorio final en GitHub y un
+informe/documentación en formato PDF.
+</p>
+</div>
+</div>
+<div id="outline-container-org5a99560" class="outline-2">
+<h2 id="org5a99560"><span class="section-number-2">14.</span> Ejemplo de Organización del Tablero de GitHub Projects</h2>
+<div class="outline-text-2" id="text-14">
+<p>
+A continuación, se muestra cómo estructurar el tablero de GitHub
+Projects para gestionar su proyecto. El objetivo es visualizar el
+estado de cada tarea, asignar responsables y mantener el progreso
+organizado.
+</p>
+</div>
+<div id="outline-container-org1d354b7" class="outline-3">
+<h3 id="org1d354b7"><span class="section-number-3">14.1.</span> Estructura del Tablero de Proyectos</h3>
+<div class="outline-text-3" id="text-14-1">
+<ul class="org-ul">
+<li>Columnas:
+
+<ul class="org-ul">
+<li>To Do (Por Hacer): Tareas pendientes de iniciar.</li>
+<li>In Progress (En Progreso): Tareas en las que se está trabajando
+activamente.</li>
+<li>Review (Revisión): Tareas completadas que necesitan revisión o
+pruebas.</li>
+<li>Done (Hecho): Tareas finalizadas y revisadas.</li>
+</ul></li>
+
+<li>Etiquetas (usa etiquetas de colores para organizar las tareas):
+
+<ul class="org-ul">
+<li>Infraestructura: Tareas relacionadas con Vagrant y
+configuración del entorno.</li>
+<li>Ansible: Creación de playbooks y roles.</li>
+<li>Pruebas: Pruebas funcionales y de calidad.</li>
+<li>Documentación: Redacción del README y guía de usuario.</li>
+<li>General: Gestión del repositorio, organización del equipo, etc.</li>
+</ul></li>
+
+<li>Asignación de Tareas:  
+
+<ul class="org-ul">
+<li>Cada tarea debe asignarse a un responsable (o varios, si es
+necesario).</li>
+<li>Incluye una breve descripción y enlaces relacionados, si
+aplica.</li>
+</ul></li>
+</ul>
+
+<table id="org3e0a70d" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<caption class="t-above"><span class="table-number">Tabla 1</span> Ejemplo de Tareas en el Tablero</caption>
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Tarea</th>
+<th scope="col" class="org-left">Descripción</th>
+<th scope="col" class="org-left">Etiquetas</th>
+<th scope="col" class="org-left">Asignado a</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Crear el repositorio en GitHub</td>
+<td class="org-left">Crear el repositorio con licencia, estructura inicial y archivo <i>README.md</i>.</td>
+<td class="org-left">General</td>
+<td class="org-left">Juan</td>
+</tr>
+
+<tr>
+<td class="org-left">Configurar el <i>Vagrantfile</i></td>
+<td class="org-left">Crear un archivo <i>Vagrantfile</i> para configurar la máquina virtual con red y recursos necesarios.</td>
+<td class="org-left">Infraestructura</td>
+<td class="org-left">Marta</td>
+</tr>
+
+<tr>
+<td class="org-left">Crear playbooks básicos en Ansible</td>
+<td class="org-left">Desarrollar un playbook para instalar y configurar el servidor FTP.</td>
+<td class="org-left">Ansible</td>
+<td class="org-left">Pedro</td>
+</tr>
+
+<tr>
+<td class="org-left">Probar conexión al servidor FTP</td>
+<td class="org-left">Verificar que un cliente puede conectarse al servidor y transferir archivos.</td>
+<td class="org-left">Pruebas</td>
+<td class="org-left">Ana</td>
+</tr>
+
+<tr>
+<td class="org-left">Redactar guía de usuario</td>
+<td class="org-left">Documentar cómo desplegar el servidor y conectarse mediante un cliente FTP.</td>
+<td class="org-left">Documentación</td>
+<td class="org-left">Carla</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="outline-container-org2f16f42" class="outline-2">
+<h2 id="org2f16f42"><span class="section-number-2">15.</span> Plantillas para las Tareas</h2>
+<div class="outline-text-2" id="text-15">
+<p>
+A continuación creamos un ejemplo de plantilla de lo que podría ser
+una tarea.
+</p>
+</div>
+<div id="outline-container-orgb55dd6d" class="outline-3">
+<h3 id="orgb55dd6d"><span class="section-number-3">15.1.</span> Plantilla para Crear una Tarea</h3>
+<div class="outline-text-3" id="text-15-1">
+<ul class="org-ul">
+<li>Título de la Tarea: Breve descripción de la tarea.</li>
+<li>Descripción:
+<ul class="org-ul">
+<li>¿Qué se debe hacer?</li>
+<li>¿Qué herramientas o archivos están involucrados?</li>
+<li>Detalles específicos del resultado esperado.</li>
+</ul></li>
+<li>Criterios de Finalización: Lista de condiciones para considerar la
+tarea como completada.</li>
+<li>Etiquetas: Añade etiquetas relevantes (e.g., Infraestructura,
+Ansible, Pruebas, etc.).</li>
+<li>Responsable(s): Persona(s) encargada(s) de completar la tarea.</li>
+</ul>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listado de programa 1 </span>Ejemplo de tarea en formato markdown</label><pre class="src src-markdown">Configuración inicial del servidor FTP con Ansible.  
+
+Detalles:
+
+- Se creó un playbook para instalar `vsftpd` y configurarlo con usuarios locales.  
+- Se añadió un rol de Ansible para reutilizar la configuración en otros proyectos.  
+- Configuración probada con éxito en la máquina virtual de Vagrant.  
+
+Evidencias:
+
+- Captura de pantalla del cliente FTP conectado al servidor.  
+- Resultado de `ansible-lint` sin errores.  
+- [Enlace al playbook en GitHub](https://github.com/equipo-servidor-ftp/ansible/playbook.yml).
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org4dd72f3" class="outline-2">
+<h2 id="org4dd72f3"><span class="section-number-2">16.</span> Tarea Adicional: Configuración del Servidor DNS</h2>
+<div class="outline-text-2" id="text-16">
+<p>
+La tarea de configuración del servicio DNS se puede realizar de dos
+formas. La más sencilla sería falsear la consulta utilizando
+direcciones del servicio nip.io. Por ejemplo ftp.192.168.57.10.nip.io
+con lo cual no haría falta el servicio DNS. La otra manera, la real,
+se realizaría a continuación y sería una tarea adicional.
+</p>
+</div>
+<div id="outline-container-org1384b63" class="outline-3">
+<h3 id="org1384b63"><span class="section-number-3">16.1.</span> Configuración del DNS con Ansible</h3>
+<div class="outline-text-3" id="text-16-1">
+<ul class="org-ul">
+<li>Crear un playbook de Ansible para configurar un servidor DNS (por
+ejemplo, utilizando BIND9).</li>
+
+<li>Añadir un registro A en la zona DNS para resolver el dominio del
+servidor FTP. Ejemplo: <code>ftp.example.test</code> -&gt; <code>192.168.56.10</code> (IP de
+la máquina virtual de Vagrant).</li>
+
+<li>Configurar un archivo de zona con los siguientes registros básicos:
+
+<ul class="org-ul">
+<li>Registro A: Dirección IP del servidor FTP.</li>
+
+<li>Registro CNAME (opcional): Alias para simplificar referencias al
+dominio.</li>
+
+<li>Registro PTR: Resolución inversa de IP a nombre de dominio
+(opcional).</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org4b53b62" class="outline-3">
+<h3 id="org4b53b62"><span class="section-number-3">16.2.</span> Integración del DNS en el Proyecto</h3>
+<div class="outline-text-3" id="text-16-2">
+<p>
+Modificar la configuración de red del cliente para que utilice el servidor DNS configurado.
+</p>
+
+<ul class="org-ul">
+<li>Documentar los pasos necesarios para probar la resolución del
+dominio:
+
+<ul class="org-ul">
+<li>Uso del comando <code>nslookup</code> o <code>dig</code> para validar que
+<code>ftp.example.test</code> se resuelve correctamente.</li>
+
+<li>Pruebas de conexión al servidor FTP utilizando el dominio
+configurado en lugar de la IP.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgda7fafe" class="outline-2">
+<h2 id="orgda7fafe"><span class="section-number-2">17.</span> Evaluación</h2>
+<div class="outline-text-2" id="text-17">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Criterios</th>
+<th scope="col" class="org-right">Puntos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">El servidor DNS se configura correctamente y resuelve el dominio `ftp.example.com`.</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">Los registros A, CNAME (opcional) y PTR (opcional) están configurados correctamente.</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">La configuración está integrada con el servidor FTP y permite conexiones usando el dominio.</td>
+<td class="org-right">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Autor: Fernando Raya</p>
+<p class="date">Created: 2026-01-06 mar 20:33</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

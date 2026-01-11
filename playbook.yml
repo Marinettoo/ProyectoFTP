@@ -1,0 +1,129 @@
+#crear los usuarios
+
+- name: "crear usuario luis"
+
+      user:
+
+        name: luis
+
+        state: present #si ya existe el usuario, no hará nada
+
+        shell: /bin/bash
+
+        password: "{{ '1234' | password_hash('sha512') }}" # la contraseña será "1234" y estará encriptada con sha 512. Si no lo estuviera, linux no la cogería.
+
+
+
+- name: "crear usuario maria"
+
+      user:
+
+        name: maria
+
+        state: present
+
+        shell: /bin/bash
+
+        password: "{{ '1234' | password_hash('sha512') }}"
+
+
+
+- name: "crear usuario miguel"
+
+      user:
+
+        name: miguel
+
+        state: present
+
+        shell: /bin/bash
+
+        password: "{{ '1234' | password_hash('sha512') }}"
+
+
+
+
+
+#creacion de los archivos que pertenecen a cada usuario
+
+- name: "crear archivo luis1"
+
+  copy:
+
+    dest: "/home/luis/luis1.txt"
+
+    content: "este es el contenido del archivo luis1"
+
+    owner: luis
+
+    group: luis
+
+    mode: '0644' # pongo estos permisos para que, en este caso, todos puedan leer los archivos pero solo escribir en su archivo.
+
+
+
+- name: "crear archivo maria1"
+
+  copy:
+
+    dest: "/home/maria/maria1.txt"
+
+    content: "este es el contenido del archivo maria1"
+
+    owner: maria
+
+    group: maria
+
+    mode: '0644'
+
+
+
+- name: "crear archivo luis2"
+
+  copy:
+
+    dest: "/home/luis/luis2.txt"
+
+    content: "este es el contenido del arhico luis2"
+
+    owner: luis
+
+    group: luis
+
+    mode: '0644'
+
+
+
+- name: "crear archivo maria2"
+
+  copy:
+
+    dest: "/home/maria/maria2.txt"
+
+    content: "este es el contenido del arhico maria2"
+
+    owner: maria
+
+    group: maria
+
+    mode: '0644'
+
+
+
+
+
+- name: "añadir a maria a excepciones de chroot"  #si un usuario está añadido a chroot, no puede ver mas allá de su carpeta /home
+
+      lineinfile: #  Busca la linea que incluye lo siguiente:
+
+        path: /etc/vsftpd.chroot_list #los usuarios añadido a este archivo son las excepciones
+
+        line: "maria"
+
+        create: yes # si no existe el archivo, lo creamos
+
+        owner: root
+
+        group: root
+
+        mode: '0644'

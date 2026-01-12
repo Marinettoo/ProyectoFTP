@@ -1,0 +1,72 @@
+- name: "configuración completa del Servidor FTP Seguro"
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: "crear usuario luis"
+      user:
+        name: luis
+        state: present # Si ya existe el usuario, no hará nada
+        shell: /bin/bash
+        password: "{{ '1234' | password_hash('sha512') }}" # Contraseña '1234' encriptada
+
+    - name: "crear usuario maria"
+      user:
+        name: maria
+        state: present
+        shell: /bin/bash
+        password: "{{ '1234' | password_hash('sha512') }}"
+
+    - name: "crear usuario miguel"
+      user:
+        name: miguel
+        state: present
+        shell: /bin/bash
+        password: "{{ '1234' | password_hash('sha512') }}"
+
+
+
+# creación de usuarios
+
+    - name: "crear archivo luis1"
+      copy:
+        dest: "/home/luis/luis1.txt"
+        content: "contenido del usuario: luis"
+        owner: luis
+        group: luis
+        mode: '0644' # Todos leen, solo dueño escribe
+
+    - name: "crear archivo luis2"
+      copy:
+        dest: "/home/luis/luis2.txt"
+        content: "contenido del usuario: luis2"
+        owner: luis
+        group: luis
+        mode: '0644'
+
+    - name: "crear archivo maria1"
+      copy:
+        dest: "/home/maria/maria1.txt"
+        content: "contenido del usuario: maria"
+        owner: maria
+        group: maria
+        mode: '0644'
+
+    - name: "crear archivo maria2"
+      copy:
+        dest: "/home/maria/maria2.txt"
+        content: "contenido del usuario: maria2"
+        owner: maria
+        group: maria
+        mode: '0644'
+
+
+# Desenjaulo a María
+    - name: "añadir a maria a excepciones de chroot" #Todos los usuarios que aparezcan en chroot solo podrán ver su carpeta /home. No podrán ver las carpetas de otros usuarios
+      lineinfile:
+        path: /etc/vsftpd.chroot_list # Los usuarios aquí NO estarán enjaulados
+        line: "maria"
+        create: yes
+        owner: root
+        group: root
+        mode: '0644'

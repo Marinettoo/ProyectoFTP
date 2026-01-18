@@ -97,15 +97,17 @@ La conexión es diferente porque requiere cifrado estricto.
     
 ![Configuración FTPS Filezilla](docs/images/config-ftps.png)
     
-    * **Servidor:** `192.168.56.10` 
-    
-        * **Cifrado:** `Requiere FTP explícito sobre TLS` (Si no pones esto, el servidor rechazará la conexión).
-        * **Usuario:** `luis` (o cualquier otro de la tabla).
-        * **Contraseña:** `1234`
+**Servidor:** `192.168.56.10` 
 
-    * Al conectar, saltará un **Aviso de Certificado Desconocido**.
-        * Esto es normal porque el certificado lo hemos creado nosotros y no una autoridad oficial.
-        * Marcaremos "Confiar siempre en este certificado" y aceptaremos.
+* **Cifrado:** `Requiere FTP explícito sobre TLS` (Si no pones esto, el servidor rechazará la conexión).
+
+     * **Usuario:** `luis` (o cualquier otro de la tabla).
+     * **Contraseña:** `1234`
+
+* Al conectar, saltará un **Aviso de Certificado Desconocido**
+
+    * Esto es normal porque el certificado lo hemos creado nosotros y no una autoridad oficial.
+    * Marcaremos "Confiar siempre en este certificado" y aceptaremos.
 
 ![Aviso Certificado](docs/images/aviso-certificado.png)
 

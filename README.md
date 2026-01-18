@@ -67,6 +67,7 @@ En este servidor, la configuración permite el acceso a usuarios desconocidos ("
 
 ## FTP Seguro
 [Enunciado del proyecto](https://github.marinettoo.es/ProyectoFTP/ftp-seguro.html)
+
 En este servidor, la configuración implementa cifrado SSL/TLS (FTPS), ideal para usuarios registrados que necesitan transferir información sensible asegurando que nadie pueda interceptar las contraseñas ni los archivos.
 * 📂 **Carpeta:** `/ftp-seguro/`
 

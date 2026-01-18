@@ -1,44 +1,41 @@
-  ---
-  - name: "Configuración de Servidor FTP anonimo"
-    hosts: all
-    become: yes
+---
+- name: "Configuracion de Servidor FTP anonimo"
+  hosts: all
+  become: yes
 
-    tasks:
+  tasks:
+    - name: "Instalar el servidor vsftpd"
+      apt:
+        name: vsftpd
+        state: latest
+        update_cache: yes
 
-  #Instalar el servidor FTP
-      - name: "Instalar el servidor vsftpd"
-        apt:
-          name: vsftpd
-          state: latest
-          update_cache: yes
+    - name: "comprobar que existe la carpeta para anonimos"
+      file:
+        path: /srv/ftp
+        state: directory
+        owner: root
+        group: root
+        mode: '0555'
 
-  #Comprobar si la carpeta para los usuarios anónimos existe
-      - name: "comprobar que existe la carpeta para anonimos"
-        file:
-          path: /srv/ftp
-          state: directory
-          owner: ftp
-          group: ftp
-          mode: '0755' # los usuarios anonimos no tendrán permisos de escritura en esta carpeta
+    - name: "Configurar acceso anonimo basico"
+      copy:
+        dest: /etc/vsftpd.conf
+        content: |
+          listen=YES
+          listen_ipv6=NO
+          anonymous_enable=YES
+          local_enable=NO
+          anon_root=/srv/ftp
+          anon_upload_enable=NO
+          anon_mkdir_write_enable=NO
+          ftpd_banner=-- Mirror de Opensuse para 'sistema.sol'
+          max_clients=200
+          anon_max_rate=51200
+          idle_session_timeout=30
+          allow_writeable_chroot=YES
 
-      - name: "configurar el acceso anónimo"
-        copy:
-          dest: /etc/vsftpd.conf
-          content: |
-            listen=YES
-            listen_ipv6=NO
-            anonymous_enable=YES
-            local_enable=NO
-            anon_root=/srv/ftp
-            anon_upload_enable=NO
-            anon_mkdir_write_enable=NO
-            ftpd_banner=-- Mirror de Opensuse para 'sistema.sol'
-            max_clients=200
-            anon_max_rate=51200
-            idle_session_timeout=30
-
-# Reiniciar el servicio una vez configurado
-      - name: "Reiniciar vsftpd"
-        service:
-          name: vsftpd
-          state: restarted
+    - name: "Reiniciar vsftpd"
+      service:
+        name: vsftpd
+        state: restarted

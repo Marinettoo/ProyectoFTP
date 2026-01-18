@@ -1,72 +1,206 @@
-- name: "configuración completa del Servidor FTP Seguro"
+---
+- name: "configuracion FTP seguro"
   hosts: all
   become: yes
 
   tasks:
+#Instalar vsftpd
+    - name: "Instalar el servidor vsftpd"
+      apt:
+        name: vsftpd
+        state: latest
+        update_cache: yes
+
+#Instalamos openssl para crear los certificados
+    - name: "Instalar openssl "
+      apt:
+        name: openssl
+        state: latest
+
+#Creamos el certificado ssl
+    - name: "Generar certificado SSL simple"
+    
+    #-openssl req -x509 (creamos un certificado ssl)
+    #-nodes (no pide contraseña)
+    #-days (validez de un año )
+    #-newkey rsa:20248 (creamos un archivo .key que guardaremos mas adelante en la ruta /etc/ssl/private/ y aparecerá cifrado por el protocolo rsa:2048)
+    
+    #-keyout /etc/ssl/private/example.test.key (ruta en la que guardaremos la clave privada)
+    #-out /etc/ssl/certs/example.test.pem (ruta en la q guardaremos la clave pública)
+    #-subj "/CN=ftp.example.test" (rellanará el formularo con ese nombre: ftp.example.test)
+
+      command: >
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048
+        -keyout /etc/ssl/private/example.test.key
+        -out /etc/ssl/certs/example.test.pem
+        -subj "/CN=ftp.example.test"
+      args:
+        creates: /etc/ssl/certs/example.test.pem
+
+    #Creación de los usuarios
     - name: "crear usuario luis"
       user:
         name: luis
-        state: present # Si ya existe el usuario, no hará nada
+        password: "{{ '1234' | password_hash('sha512') }}"
         shell: /bin/bash
-        password: "{{ '1234' | password_hash('sha512') }}" # Contraseña '1234' encriptada
 
     - name: "crear usuario maria"
       user:
         name: maria
-        state: present
-        shell: /bin/bash
         password: "{{ '1234' | password_hash('sha512') }}"
+        shell: /bin/bash
 
     - name: "crear usuario miguel"
       user:
         name: miguel
-        state: present
-        shell: /bin/bash
         password: "{{ '1234' | password_hash('sha512') }}"
+        shell: /bin/bash
 
-
-
-# creación de usuarios
-
-    - name: "crear archivo luis1"
+    #creación de los archivos de prueba
+    - name: "Crear archivo luis1.txt"
       copy:
-        dest: "/home/luis/luis1.txt"
-        content: "contenido del usuario: luis"
-        owner: luis
-        group: luis
-        mode: '0644' # Todos leen, solo dueño escribe
-
-    - name: "crear archivo luis2"
-      copy:
-        dest: "/home/luis/luis2.txt"
-        content: "contenido del usuario: luis2"
+        dest: /home/luis/luis1.txt
+        content: "contenido del archivo: luis 1"
         owner: luis
         group: luis
         mode: '0644'
 
-    - name: "crear archivo maria1"
+    - name: "Crear archivo luis2.txt"
       copy:
-        dest: "/home/maria/maria1.txt"
-        content: "contenido del usuario: maria"
+        dest: /home/luis/luis2.txt
+        content: "contenido del archivo: luis 2"
+        owner: luis
+        group: luis
+        mode: '0644'
+
+    - name: "Crear archivo maria1.txt"
+      copy:
+        dest: /home/maria/maria1.txt
+        content: "contenido del archvo: maria 1"
         owner: maria
         group: maria
         mode: '0644'
 
-    - name: "crear archivo maria2"
+    - name: "Crear archivo maria2.txt"
       copy:
-        dest: "/home/maria/maria2.txt"
-        content: "contenido del usuario: maria2"
+        dest: /home/maria/maria2.txt
+        content: "contenido del archivo: maria 2"
         owner: maria
         group: maria
         mode: '0644'
 
-
-# Desenjaulo a María
-    - name: "añadir a maria a excepciones de chroot" #Todos los usuarios que aparezcan en chroot solo podrán ver su carpeta /home. No podrán ver las carpetas de otros usuarios
-      lineinfile:
-        path: /etc/vsftpd.chroot_list # Los usuarios aquí NO estarán enjaulados
-        line: "maria"
-        create: yes
+    # mensaje de bienvenida de los usuarios anonimos
+    - name: "crear mensaje de bienvenida para anonimos"
+      copy:
+        dest: /srv/ftp/.message
+        content: ---You have accessed the public directory server of 'sistema.sol'---
         owner: root
         group: root
         mode: '0644'
+
+    # no enjaular a maria
+    - name: "Añadir a Maria a excepciones de chroot"
+      lineinfile:
+        #en este archivo estarán guardados los usuarios que no pertenecen a chroot. Si no está, lo creamos
+        path: /etc/vsftpd.chroot_list
+        line: "maria"
+        create: true
+        owner: root
+        mode: '0644'
+
+    # configuracion del servidor ftp
+    - name: "configurar archvivo vsftpd.conf"
+      copy:
+        dest: /etc/vsftpd.conf
+        content: |
+          # iniciamos usando ipv4
+          listen=YES
+          listen_ipv6=NO
+
+          # habilitamos el puerto 20 ç
+          connect_from_port_20=YES
+          
+
+          # permisos
+          anonymous_enable=YES
+          local_enable=YES
+          write_enable=YES
+          
+
+          # mensajes de bienvenida
+          ftpd_banner=--- Welcome to the FTP server of 'sistema.sol'---
+
+          # actica la capacidad del servidor de enviar mensajes cuuando entremos a una carpeta
+          dirmessage_enable=YES 
+
+          # decimos en que ruta se guardaran los mensajes
+          message_file=.message
+
+
+          #tiempos
+
+          #tiempo máximo (en segundos) que un usuario puede estar conectado sin hacer nada.
+          idle_session_timeout=720
+
+          #numero maxmo de usuarios conectados al servidor
+          max_clients=15
+
+          #velocidad máxima de descarga (en bytes) para los usuarios con usuario y contraseña
+          #me habia equivocado y lo habia puesto en megabytes. creo q ya esta corregido
+
+          # 5 MB = 5 * 1024 * 1024
+          local_max_rate=5242880
+
+          #velocidad maxima de descarga para los usuarios anonimos 
+          # 2 MB = 2 * 1024 * 1024
+          anon_max_rate=2097152
+
+
+          #configuracion de chroot
+
+          #metemos a todos los usuarios en chroot (en su carpeta personnal)
+          chroot_local_user=YES 
+
+          #activamos la lista de usuarios excepcion de chroot (en la que hemos metido a maría)
+          chroot_list_enable=YES
+
+          #indicamos en que archivo estan los usuarios que hemos puesto como excepción 
+          chroot_list_file=/etc/vsftpd.chroot_list
+
+          #Permite que un usuario esté enjaulado (chroot) y a la vez tenga permisos de escritura en su propia carpeta
+          allow_writeable_chroot=YES
+
+
+          # certificado ssl 
+
+          #activamos ssl 
+          ssl_enable=YES  
+
+          # permitimos que los usuarios anónimos usen cifrado si quieren, pero no les obliga.
+          allow_anon_ssl=YES
+  
+          #Obligamos a los usuarios registraos a usar cifrado para ver o transferir cosas.
+          force_local_data_ssl=YES
+
+          #obligamos a los usuarios locales a cifrar el momento de poner su usuario y contraseña.
+          force_local_logins_ssl=YES
+          
+
+          #Protocolos de cifrado
+          ssl_tlsv1=YES
+          ssl_sslv2=NO
+          ssl_sslv3=YES
+          
+          #le decimos a vsftpd que use estos archivos pcomo clave publica y privada
+          rsa_cert_file=/etc/ssl/certs/example.test.pem
+          rsa_private_key_file=/etc/ssl/private/example.test.key
+          
+          # sin esto, no funcionará en filezilla
+          require_ssl_reuse=NO
+
+
+    # Reiniciamos el servicio
+    - name: "Reiniciar vsftpd"
+      service:
+        name: vsftpd
+        state: restarted

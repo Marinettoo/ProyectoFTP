@@ -4,31 +4,29 @@
   become: yes
 
   tasks:
-#Instalar vsftpd
+    #Instalar vsftpd
     - name: "Instalar el servidor vsftpd"
       apt:
         name: vsftpd
         state: latest
         update_cache: yes
 
-#Instalamos openssl para crear los certificados
+    #Instalamos openssl para crear los certificados
     - name: "Instalar openssl "
       apt:
         name: openssl
         state: latest
 
-#Creamos el certificado ssl
+    #Creamos el certificado ssl
     - name: "Generar certificado SSL simple"
-    
-    #-openssl req -x509 (creamos un certificado ssl)
-    #-nodes (no pide contraseña)
-    #-days (validez de un año )
-    #-newkey rsa:20248 (creamos un archivo .key que guardaremos mas adelante en la ruta /etc/ssl/private/ y aparecerá cifrado por el protocolo rsa:2048)
-    
-    #-keyout /etc/ssl/private/example.test.key (ruta en la que guardaremos la clave privada)
-    #-out /etc/ssl/certs/example.test.pem (ruta en la q guardaremos la clave pública)
-    #-subj "/CN=ftp.example.test" (rellanará el formularo con ese nombre: ftp.example.test)
-
+      # -openssl req -x509 (creamos un certificado ssl)
+      # -nodes (no pide contraseña)
+      # -days (validez de un año )
+      # -newkey rsa:20248 (creamos un archivo .key que guardaremos mas adelante en la ruta /etc/ssl/private/ y aparecerá cifrado por el protocolo rsa:2048)
+      
+      # -keyout /etc/ssl/private/example.test.key (ruta en la que guardaremos la clave privada)
+      # -out /etc/ssl/certs/example.test.pem (ruta en la q guardaremos la clave pública)
+      # -subj "/CN=ftp.example.test" (rellanará el formularo con ese nombre: ftp.example.test)
       command: >
         openssl req -x509 -nodes -days 365 -newkey rsa:2048
         -keyout /etc/ssl/private/example.test.key
@@ -120,22 +118,19 @@
           # habilitamos el puerto 20 ç
           connect_from_port_20=YES
           
-
           # permisos
           anonymous_enable=YES
           local_enable=YES
           write_enable=YES
           
-
           # mensajes de bienvenida
           ftpd_banner=--- Welcome to the FTP server of 'sistema.sol'---
 
           # actica la capacidad del servidor de enviar mensajes cuuando entremos a una carpeta
-          dirmessage_enable=YES 
+          dirmessage_enable=YES
 
           # decimos en que ruta se guardaran los mensajes
           message_file=.message
-
 
           #tiempos
 
@@ -155,11 +150,10 @@
           # 2 MB = 2 * 1024 * 1024
           anon_max_rate=2097152
 
-
           #configuracion de chroot
 
           #metemos a todos los usuarios en chroot (en su carpeta personnal)
-          chroot_local_user=YES 
+          chroot_local_user=YES
 
           #activamos la lista de usuarios excepcion de chroot (en la que hemos metido a maría)
           chroot_list_enable=YES
@@ -170,11 +164,10 @@
           #Permite que un usuario esté enjaulado (chroot) y a la vez tenga permisos de escritura en su propia carpeta
           allow_writeable_chroot=YES
 
-
           # certificado ssl 
 
           #activamos ssl 
-          ssl_enable=YES  
+          ssl_enable=YES
 
           # permitimos que los usuarios anónimos usen cifrado si quieren, pero no les obliga.
           allow_anon_ssl=YES
@@ -185,7 +178,6 @@
           #obligamos a los usuarios locales a cifrar el momento de poner su usuario y contraseña.
           force_local_logins_ssl=YES
           
-
           #Protocolos de cifrado
           ssl_tlsv1=YES
           ssl_sslv2=NO
@@ -197,7 +189,6 @@
           
           # sin esto, no funcionará en filezilla
           require_ssl_reuse=NO
-
 
     # Reiniciamos el servicio
     - name: "Reiniciar vsftpd"

@@ -93,7 +93,7 @@
     - name: "crear mensaje de bienvenida para anonimos"
       copy:
         dest: /srv/ftp/.message
-        content: ---You have accessed the public directory server of 'sistema.sol'---
+        content: "---You have accessed the public directory server of 'sistema.sol'---"
         owner: root
         group: root
         mode: '0644'

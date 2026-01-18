@@ -8,14 +8,14 @@
     - name: "Instalar el servidor vsftpd"
       apt:
         name: vsftpd
-        state: latest
+        state: present
         update_cache: yes
 
     #Instalamos openssl para crear los certificados
     - name: "Instalar openssl "
       apt:
         name: openssl
-        state: latest
+        state: present
 
     #Creamos el certificado ssl
     - name: "Generar certificado SSL simple"
@@ -23,7 +23,6 @@
       # -nodes (no pide contraseña)
       # -days (validez de un año )
       # -newkey rsa:20248 (creamos un archivo .key que guardaremos mas adelante en la ruta /etc/ssl/private/ y aparecerá cifrado por el protocolo rsa:2048)
-      
       # -keyout /etc/ssl/private/example.test.key (ruta en la que guardaremos la clave privada)
       # -out /etc/ssl/certs/example.test.pem (ruta en la q guardaremos la clave pública)
       # -subj "/CN=ftp.example.test" (rellanará el formularo con ese nombre: ftp.example.test)
@@ -110,6 +109,7 @@
     - name: "configurar archvivo vsftpd.conf"
       copy:
         dest: /etc/vsftpd.conf
+        mode: '0644'
         content: |
           # iniciamos usando ipv4
           listen=YES
@@ -146,7 +146,7 @@
           # 5 MB = 5 * 1024 * 1024
           local_max_rate=5242880
 
-          #velocidad maxima de descarga para los usuarios anonimos 
+          #velocidad maxima de descarga para los usuarios anonimos
           # 2 MB = 2 * 1024 * 1024
           anon_max_rate=2097152
 
@@ -158,15 +158,15 @@
           #activamos la lista de usuarios excepcion de chroot (en la que hemos metido a maría)
           chroot_list_enable=YES
 
-          #indicamos en que archivo estan los usuarios que hemos puesto como excepción 
+          #indicamos en que archivo estan los usuarios que hemos puesto como excepción
           chroot_list_file=/etc/vsftpd.chroot_list
 
           #Permite que un usuario esté enjaulado (chroot) y a la vez tenga permisos de escritura en su propia carpeta
           allow_writeable_chroot=YES
 
-          # certificado ssl 
+          # certificado ssl
 
-          #activamos ssl 
+          #activamos ssl
           ssl_enable=YES
 
           # permitimos que los usuarios anónimos usen cifrado si quieren, pero no les obliga.

@@ -1,0 +1,74 @@
+---
+- name: "configuracion servidor DNS"
+  hosts: all
+  become: yes
+
+  tasks:
+    #Instalar bind9
+    - name: "Instalar bind9"
+      apt:
+        name: bind9
+        state: present
+        update_cache: yes
+
+    #configuracion de la zona en named.conf.local
+    - name: "Definir zona example.test"
+      blockinfile:
+        path: /etc/bind/named.conf.local
+        block: |
+          zone "example.test" {
+              type master;
+              file "/etc/bind/db.example.test";
+          };
+
+    #creacion del archvivo de zona donde guardaremos las ips
+    - name: "Crear archivo de zona db.example.test"
+      copy:
+        dest: /etc/bind/db.example.test
+        # aqui definimos los registros A (host a IP)
+        content: |
+          ;
+          ; Archivo de zona BIND para example.test
+          ;
+          $TTL    604800
+          @       IN      SOA     ns.example.test. root.example.test. (
+                                2         ; Serial
+                           604800         ; Refresh
+                            86400         ; Retry
+                          2419200         ; Expire
+                           604800 )       ; Negative Cache TTL
+          ;
+          ; Registros NS
+          @       IN      NS      ns.example.test.
+          
+          ; Registros A (Las IPs de nuestras maquinas)
+          ns      IN      A       192.168.56.10
+          ftp     IN      A       192.168.56.10
+        force: yes
+        mode: '0644'
+
+    #configuracion de reenvio para tener internet (usamos el de google)
+    - name: "Configurar forwarders"
+      blockinfile:
+        path: /etc/bind/named.conf.options
+        insertafter: "recursion yes;"
+        block: |
+          forwarders {
+              8.8.8.8;
+          };
+          allow-query { any; };
+
+    #cambiamos el dns de la propia maquina para que se pregunte a si misma
+    - name: "Cambiar DNS de la maquina"
+      copy:
+        dest: /etc/resolv.conf
+        content: |
+          nameserver 127.0.0.1
+          nameserver 8.8.8.8
+        mode: '0644'
+
+    # Reiniciamos el servicio
+    - name: "Reiniciar bind9"
+      service:
+        name: bind9
+        state: restarted

@@ -9,8 +9,15 @@ Vagrant.configure("2") do |config|
     vb.cpus = 1
   end
 
+  # playbook del FTP 
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbook.yml"
-    ansible.install = true  #instala Ansible si no está
+    ansible.install = true  # instala Ansible si no está
   end
+
+  # playbook del DNS 
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.playbook = "dns.yml"
+  end
+
 end
